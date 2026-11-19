@@ -191,7 +191,7 @@ describe("whole-day events through the MCP client", () => {
 		});
 	});
 
-	it.fails("the list-events description the client sees explains whole-day dates", async () => {
+	it("the list-events description the client sees explains whole-day dates", async () => {
 		const { client } = fakeCalendar();
 		const mcp = await connect(client);
 

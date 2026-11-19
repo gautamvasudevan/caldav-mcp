@@ -1,14 +1,14 @@
 {
 	"name": "caldav-mcp",
-	"version": "0.11.3",
-	"description": "A CalDAV client using Model Context Protocol (MCP) to expose calendar operations as tools for AI assistants.",
-	"homepage": "https://github.com/langmail/caldav-mcp#readme",
+	"version": "0.12.0",
+	"description": "A CalDAV client using Model Context Protocol (MCP) to expose calendar operations (including recurring EXDATE skips, single-occurrence overrides, expanded occurrences, and TZID support) as tools for AI assistants.",
+	"homepage": "https://github.com/gautamvasudevan/caldav-mcp#readme",
 	"bugs": {
-		"url": "https://github.com/langmail/caldav-mcp/issues"
+		"url": "https://github.com/gautamvasudevan/caldav-mcp/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/langmail/caldav-mcp.git"
+		"url": "https://github.com/gautamvasudevan/caldav-mcp.git"
 	},
 	"license": "MIT",
 	"author": "Dominik Grusemann",
@@ -30,7 +30,6 @@
 		"docs:check": "tsx scripts/gen-tool-docs.ts --check",
 		"fix": "ultracite fix",
 		"knip": "knip",
-		"prepare": "lefthook install",
 		"semantic-release": "semantic-release",
 		"smoke": "npm run build && tsx --env-file=.env scripts/smoke.ts",
 		"smoke:agent": "npm run build && bash scripts/smoke-agent.sh",
@@ -43,6 +42,7 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.26.0",
+		"ical.js": "^2.2.1",
 		"ts-caldav": "^0.4.0",
 		"zod": "^4.4.3"
 	},

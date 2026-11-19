@@ -1,0 +1,62 @@
+import { z } from "zod";
+import { hrefFor, toCalendarPath } from "./caldav-href.js";
+import { todoStatusSchema } from "./todo-status.js";
+export const updateTodoDefinition = {
+    description: "Updates an existing task (VTODO) in the calendar specified by its URL. Only provided fields are changed. To mark a task done, prefer the `complete-todo` tool.",
+    inputSchema: {
+        calendarUrl: z.string(),
+        description: z.string().optional(),
+        due: z.string().datetime({ offset: true }).optional(),
+        location: z.string().optional(),
+        start: z.string().datetime({ offset: true }).optional(),
+        status: todoStatusSchema.optional(),
+        summary: z.string().optional(),
+        uid: z
+            .string()
+            .describe("Unique identifier of the todo to update (from list-todos)"),
+    },
+    name: "update-todo",
+    returns: "The unique ID of the updated todo",
+};
+export function registerUpdateTodo(client, server) {
+    server.registerTool(updateTodoDefinition.name, {
+        description: updateTodoDefinition.description,
+        inputSchema: updateTodoDefinition.inputSchema,
+    }, async (args) => {
+        const { uid, summary, due, start, description, location, status } = args;
+        const calendarUrl = toCalendarPath(args.calendarUrl, client.baseUrl);
+        const href = hrefFor(calendarUrl, uid);
+        const [existing] = await client.getTodosByHref(calendarUrl, [href]);
+        if (!existing) {
+            throw new Error(`Todo not found: ${uid}`);
+        }
+        // RFC 5545: a COMPLETED VTODO carries a COMPLETED timestamp. Keep status
+        // and that timestamp consistent so updating status here can't leave the
+        // task in the RFC-incomplete state complete-todo guards against. An
+        // existing completion time is preserved (completion happened once);
+        // transitioning away drops it. `completed` is pulled out of `existing`
+        // so the cleared case omits the property entirely rather than setting it
+        // undefined (which exactOptionalPropertyTypes forbids).
+        const { completed: priorCompleted, ...base } = existing;
+        let completed;
+        if (status === undefined) {
+            completed = priorCompleted;
+        }
+        else if (status === "COMPLETED") {
+            completed = priorCompleted ?? new Date();
+        }
+        const updated = await client.updateTodo(calendarUrl, {
+            ...base,
+            ...(summary !== undefined && { summary }),
+            ...(due !== undefined && { due: new Date(due) }),
+            ...(start !== undefined && { start: new Date(start) }),
+            ...(description !== undefined && { description }),
+            ...(location !== undefined && { location }),
+            ...(status !== undefined && { status }),
+            ...(completed !== undefined && { completed }),
+        });
+        return {
+            content: [{ text: updated.uid, type: "text" }],
+        };
+    });
+}

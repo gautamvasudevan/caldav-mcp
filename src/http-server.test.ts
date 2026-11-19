@@ -157,7 +157,7 @@ describe("startHttpServer with a token", () => {
 			name: "list-calendars",
 		})) as { content: { text: string }[] };
 
-		expect(tools).toHaveLength(10);
+		expect(tools).toHaveLength(11);
 		expect(JSON.parse(result.content[0]?.text ?? "")).toEqual([
 			{ displayName: "Work", url: "https://dav.example.com/cal/work/" },
 		]);
@@ -172,7 +172,7 @@ describe("startHttpServer with a token", () => {
 
 		const { tools } = await second.listTools();
 
-		expect(tools).toHaveLength(10);
+		expect(tools).toHaveLength(11);
 		await second.close();
 	});
 
@@ -323,7 +323,7 @@ describe("startHttpServer without a token", () => {
 		const client = await connect(port, undefined);
 		const { tools } = await client.listTools();
 
-		expect(tools).toHaveLength(10);
+		expect(tools).toHaveLength(11);
 		await client.close();
 		await stop(server);
 	});

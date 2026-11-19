@@ -24,6 +24,7 @@ describe("createServer", () => {
 			"create-todo",
 			"delete-event",
 			"delete-todo",
+			"get-event",
 			"list-calendars",
 			"list-events",
 			"list-todos",

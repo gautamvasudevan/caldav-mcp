@@ -69,7 +69,7 @@ describe("index --http end to end", () => {
 		await client.close();
 		signalHandlers.get("SIGTERM")?.();
 
-		expect(tools).toHaveLength(10);
+		expect(tools).toHaveLength(11);
 		expect(JSON.parse(result.content[0]?.text ?? "")).toEqual([
 			{ displayName: "Work", url: "https://dav.example.com/cal/work/" },
 		]);
